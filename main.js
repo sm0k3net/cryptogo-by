@@ -101,6 +101,47 @@ document.querySelectorAll('.detail-btn').forEach(btn => {
     });
 });
 
+// New buttons functionality
+document.addEventListener('DOMContentLoaded', () => {
+    // Portfolio button
+    const portfolioBtn = document.querySelector('.portfolio-btn');
+    if (portfolioBtn) {
+        portfolioBtn.addEventListener('click', () => {
+            alert('Функция создания портфеля будет доступна в ближайшее время!');
+        });
+    }
+
+    // Analytics button
+    const analyticsBtn = document.querySelector('.analytics-btn');
+    if (analyticsBtn) {
+        analyticsBtn.addEventListener('click', () => {
+            alert('Аналитические отчеты будут доступны в ближайшее время!');
+        });
+    }
+
+    // PVT button
+    const pvtBtn = document.querySelector('.pvt-btn');
+    if (pvtBtn) {
+        pvtBtn.addEventListener('click', () => {
+            alert('Информация о присоединении к ПВТ будет предоставлена нашими консультантами!');
+        });
+    }
+
+    // Expertise buttons
+    document.querySelectorAll('.expertise-btn').forEach(btn => {
+        if (btn.tagName === 'BUTTON') {
+            btn.addEventListener('click', (e) => {
+                const text = e.target.textContent;
+                if (text === 'Получить консультацию') {
+                    document.querySelector('#contacts').scrollIntoView({ behavior: 'smooth' });
+                } else if (text === 'Заказать аудит') {
+                    alert('Для заказа аудита свяжитесь с нашими консультантами!');
+                }
+            });
+        }
+    });
+});
+
 // Form submission
 document.querySelector('.contact-form form').addEventListener('submit', (e) => {
     e.preventDefault();
