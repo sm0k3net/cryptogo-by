@@ -58,7 +58,47 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 
 // Consultant button functionality
 document.querySelector('.consultant-btn').addEventListener('click', () => {
-    alert('Функция онлайн-консультанта будет доступна в ближайшее время!');
+    document.getElementById('chatModal').style.display = 'block';
+});
+
+// Close chat modal
+document.querySelector('.close-chat').addEventListener('click', () => {
+    document.getElementById('chatModal').style.display = 'none';
+});
+
+// Close modal when clicking outside
+window.addEventListener('click', (e) => {
+    const modal = document.getElementById('chatModal');
+    if (e.target === modal) {
+        modal.style.display = 'none';
+    }
+});
+
+// CTA buttons functionality
+document.querySelectorAll('.cta-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        const action = e.target.getAttribute('data-action');
+        switch(action) {
+            case 'start':
+                document.querySelector('#contacts').scrollIntoView({ behavior: 'smooth' });
+                break;
+            case 'learn':
+                document.querySelector('#trading').scrollIntoView({ behavior: 'smooth' });
+                break;
+            case 'laws':
+                document.querySelector('#regulation').scrollIntoView({ behavior: 'smooth' });
+                break;
+        }
+    });
+});
+
+// Detail buttons functionality
+document.querySelectorAll('.detail-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        const topic = e.target.getAttribute('data-topic');
+        // Для будущей реализации - пока показываем alert
+        alert(`Подробная информация по теме "${topic}" будет добавлена в ближайшее время.`);
+    });
 });
 
 // Form submission
@@ -101,8 +141,48 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// Update crypto prices (simulation)
-function updateCryptoPrices() {
+// Update crypto prices (real data from Binance API)
+async function updateCryptoPrices() {
+    const symbols = ['BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'XRPUSDT', 'LTCUSDT', 'USDTUSDT', 'LINKUSDT', 'DOGEUSDT'];
+    
+    try {
+        const response = await fetch('https://api.binance.com/api/v3/ticker/price');
+        const data = await response.json();
+        
+        symbols.forEach(symbol => {
+            const priceData = data.find(item => item.symbol === symbol);
+            if (priceData) {
+                const card = document.querySelector(`[data-symbol="${symbol}"]`);
+                if (card) {
+                    const priceElement = card.querySelector('.crypto-price');
+                    const price = parseFloat(priceData.price);
+                    
+                    if (symbol === 'USDTUSDT') {
+                        priceElement.textContent = '$1.00';
+                    } else {
+                        priceElement.textContent = '$' + (price < 1 ? price.toFixed(4) : price.toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        }));
+                    }
+                    
+                    // Add loading animation
+                    priceElement.style.opacity = '0.7';
+                    setTimeout(() => {
+                        priceElement.style.opacity = '1';
+                    }, 300);
+                }
+            }
+        });
+    } catch (error) {
+        console.log('Не удалось получить актуальные цены:', error);
+        // Fallback to simulation if API fails
+        simulatePriceUpdate();
+    }
+}
+
+// Fallback price simulation
+function simulatePriceUpdate() {
     const prices = document.querySelectorAll('.crypto-price');
     prices.forEach(price => {
         const currentPrice = parseFloat(price.textContent.replace(/[^0-9.]/g, ''));
@@ -129,5 +209,8 @@ function updateCryptoPrices() {
     });
 }
 
-// Update prices every 10 seconds
-setInterval(updateCryptoPrices, 10000);
+// Initial price update
+updateCryptoPrices();
+
+// Update prices every 30 seconds
+setInterval(updateCryptoPrices, 30000);
