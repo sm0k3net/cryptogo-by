@@ -255,3 +255,13 @@ updateCryptoPrices();
 
 // Update prices every 30 seconds
 setInterval(updateCryptoPrices, 30000);
+
+// Phone number reveal function
+function revealPhone(button) {
+    button.classList.add('revealed');
+    // Make the phone clickable after reveal
+    setTimeout(() => {
+        const phoneNumber = "+375299481356";
+        window.open(`tel:${phoneNumber}`, '_self');
+    }, 500);
+}
